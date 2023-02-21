@@ -18,7 +18,7 @@ namespace Moravia.Homework
         {
             var sourceFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\SourceFiles\\Document1.xml");
             var targetFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\TargetFiles\\Document1.json");
-            string input = string.Empty;
+            string input;
             
             try
             {
