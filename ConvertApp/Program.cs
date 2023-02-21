@@ -1,46 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Xml.Linq;
-using Newtonsoft.Json;
+﻿using ConvertApp.Converter;
 
-namespace Moravia.Homework
+namespace ConvertApp
 {
-    public class Document
-    {
-        public string Title { get; set; }
-        public string Text { get; set; }
-    }
-
     class Program
     {
         static void Main(string[] args)
         {
-            var sourceFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\SourceFiles\\Document1.xml");
-            var targetFileName = Path.Combine(Environment.CurrentDirectory, "..\\..\\..\\TargetFiles\\Document1.json");
-            string input;
-            
+            if (args.Length <= 1)
+            {
+                if (args.Length == 1 && (args[0].StartsWith("-h") || args[0].StartsWith("--h")))
+                    Console.WriteLine("ConvertApp.exe <source file> <target file>");
+                else
+                    Console.WriteLine("Invalid arguments. Use -h or --h for help.");
+                return;
+            }
+
+            var sourceFileName = Path.Combine(Environment.CurrentDirectory, args[0]);
+            var targetFileName = Path.Combine(Environment.CurrentDirectory, args[1]);
+
             try
             {
-                FileStream sourceStream = File.Open(sourceFileName, FileMode.Open);
-                var reader = new StreamReader(sourceStream);
-                input = reader.ReadToEnd();
+                var converter = new DocumentConverterStrategy(sourceFileName, targetFileName);
+
+                var document = converter.ConvertFrom(File.ReadAllText(sourceFileName)) ??
+                               throw new Exception("Invalid input file.");
+
+                File.WriteAllText(targetFileName, converter.ConvertTo(document));
+
+                Console.WriteLine("Conversion completed.");
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-
-            var xdoc = XDocument.Parse(input);
-            var doc = new Document
-            {
-                Title = xdoc.Root.Element("title").Value,
-                Text = xdoc.Root.Element("text").Value
-            };
-            var serializedDoc = JsonConvert.SerializeObject(doc);
-            var targetStream = File.Open(targetFileName, FileMode.Create, FileAccess.Write);
-            var sw = new StreamWriter(targetStream);
-            sw.Write(serializedDoc);
         }
     }
 }
