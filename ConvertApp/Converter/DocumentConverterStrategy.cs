@@ -2,7 +2,7 @@ using ConvertApp.Converter.Implementation;
 
 namespace ConvertApp.Converter;
 
-internal class DocumentConverterStrategy
+public class DocumentConverterStrategy
 {
     private readonly IDocumentConverterStrategy _convertFromStrategy;
     private readonly IDocumentConverterStrategy _convertToStrategy;

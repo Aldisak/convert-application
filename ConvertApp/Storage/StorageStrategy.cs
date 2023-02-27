@@ -2,7 +2,7 @@ using ConvertApp.Storage.Implementation;
 
 namespace ConvertApp.Storage;
 
-internal class StorageStrategy
+public class StorageStrategy
 {
     private readonly IStorageStrategy _sourceStorageStrategy;
     private readonly IStorageStrategy _targetStorageStrategy;
