@@ -2,13 +2,16 @@ namespace ConvertApp.Storage.Implementation;
 
 internal class FileStorage : IStorageStrategy
 {
-    public Task<string> Load(Uri sourcePath)
+    public Task<string> Load(string sourcePath)
     {
-        return File.ReadAllTextAsync(sourcePath.LocalPath);
+        return File.ReadAllTextAsync(sourcePath);
     }
 
-    public Task Save(Uri path, string content)
+    public Task Save(string path, string content)
     {
-        return File.WriteAllTextAsync(path.LocalPath, content);
+        if (Directory.Exists(Path.GetDirectoryName(path)) == false)
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+
+        return File.WriteAllTextAsync(path, content);
     }
 }

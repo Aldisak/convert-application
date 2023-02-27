@@ -8,23 +8,20 @@ internal class StorageStrategy
     private readonly IStorageStrategy _targetStorageStrategy;
 
     public StorageStrategy(
-        Uri sourcePath,
-        Uri targetPath)
+        string sourceStorageType,
+        string targetStorageType)
     {
-        _sourceStorageStrategy = SelectStrategy(sourcePath, "Source storage is not supported.");
-        _targetStorageStrategy = SelectStrategy(targetPath, "Target storage is not supported.");
+        _sourceStorageStrategy = SelectStrategy(sourceStorageType);
+        _targetStorageStrategy = SelectStrategy(targetStorageType);
     }
 
-    public Task<string> Load(Uri sourcePath) => _sourceStorageStrategy.Load(sourcePath);
-    public Task Save(Uri path, string content) => _targetStorageStrategy.Save(path, content);
+    public Task<string> Load(string sourcePath) => _sourceStorageStrategy.Load(sourcePath);
+    public Task Save(string path, string content) => _targetStorageStrategy.Save(path, content);
 
-    private static IStorageStrategy SelectStrategy(Uri uri, string errorMessage)
-        =>
-            uri.Scheme switch
-            {
-                "file" => new FileStorage(),
-                "http" => new HttpStorage(),
-                "https" => new HttpStorage(),
-                _ => throw new Exception(errorMessage)
-            };
+    private static IStorageStrategy SelectStrategy(string storageType)
+    {
+        if (storageType.StartsWith("http"))
+            return new HttpStorage();
+        return new FileStorage();
+    }
 }
