@@ -1,10 +1,11 @@
 ﻿using ConvertApp.Converter;
+using ConvertApp.Storage;
 
 namespace ConvertApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             if (args.Length <= 1)
             {
@@ -15,17 +16,9 @@ namespace ConvertApp
                 return;
             }
 
-            var sourceFileName = Path.Combine(Environment.CurrentDirectory, args[0]);
-            var targetFileName = Path.Combine(Environment.CurrentDirectory, args[1]);
-
             try
             {
-                var converter = new DocumentConverterStrategy(sourceFileName, targetFileName);
-
-                var document = converter.ConvertFrom(File.ReadAllText(sourceFileName)) ??
-                               throw new Exception("Invalid input file.");
-
-                File.WriteAllText(targetFileName, converter.ConvertTo(document));
+                await ProcessConvert(args[0], args[1]);
 
                 Console.WriteLine("Conversion completed.");
             }
@@ -33,6 +26,16 @@ namespace ConvertApp
             {
                 throw new Exception(ex.Message);
             }
+        }
+
+        private static async Task ProcessConvert(string sourceFilePath, string targetFilePath)
+        {
+            var storage = new StorageStrategy(sourceFilePath, targetFilePath);
+            var converter = new DocumentConverterStrategy(sourceFilePath, targetFilePath);
+
+            var document = converter.ConvertFrom(await storage.Load(sourceFilePath));
+
+            await storage.Save(targetFilePath, converter.ConvertTo(document));
         }
     }
 }
