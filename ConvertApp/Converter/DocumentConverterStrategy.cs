@@ -4,8 +4,8 @@ namespace ConvertApp.Converter;
 
 internal class DocumentConverterStrategy
 {
-    private IDocumentConverterStrategy _convertFromStrategy;
-    private IDocumentConverterStrategy _convertToStrategy;
+    private readonly IDocumentConverterStrategy _convertFromStrategy;
+    private readonly IDocumentConverterStrategy _convertToStrategy;
 
     public DocumentConverterStrategy(
         string sourceFileName,
